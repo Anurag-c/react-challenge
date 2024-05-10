@@ -1,7 +1,6 @@
 import React, { useEffect, useState, Children } from "react";
 
 function recursiveSum(root) {
-  console.log(root);
   const numChild = Children.count(root);
   let totalR = 0;
   let totalG = 0;
@@ -9,7 +8,7 @@ function recursiveSum(root) {
 
   Children.forEach(root, (child) => {
     let r, g, b;
-    if (child.type.name === "BlendedColor") {
+    if (child.props.name === "BlendedColor") {
       ({ r, g, b } = recursiveSum(child.props.children));
     } else {
       ({ r, g, b } = child.props);
@@ -32,14 +31,23 @@ function recursiveSum(root) {
 }
 
 function BlendedColor({ children }) {
-  const [backgroundColor, setBackgroundColor] = useState("rgb(255, 255, 255)");
+  const [rgb, setRgb] = useState({ r: 255, g: 255, b: 255 });
 
   useEffect(() => {
     const { r, g, b } = recursiveSum(children);
-    setBackgroundColor(`rgb(${r}, ${g}, ${b})`);
+    setRgb({ r, g, b });
   }, [children]);
 
-  return <div style={{ backgroundColor, padding: "40px" }}>{children}</div>;
+  return (
+    <div
+      style={{
+        backgroundColor: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+        padding: "40px",
+      }}
+    >
+      {children}
+    </div>
+  );
 }
 
 export default BlendedColor;
